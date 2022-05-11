@@ -5,11 +5,9 @@ const { resolve } = require("path");
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, options) => {
-    // Ensures that web workers can import scripts.
-    config.output.publicPath = '/_next/';
-
     config.experiments = {
       asyncWebAssembly: true,
+      layers: true,
     };
 
     config.module.rules.push({

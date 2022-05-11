@@ -2,12 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import staticData from '../../../data/apes.json';
 
-type TokenName = 'Bored Ape Yacht Club' | 'Mutant Ape Yacht Club' | 'Otherdeed for Otherside';
 interface DataItem {
-  token: TokenName;
+  token: string;
   token_id: number;
-  holder: string;
-  hold_from_timestamp: number;
+  image: string;
+  rarity: number;
 }
 interface CustomResponse {
   message: string;
@@ -39,9 +38,10 @@ export default function handler(
   const sizeNum = +size ?? 0;
 
   // 没有 page 参数时，返回全部
-  if (page) {
+  if (!page) {
     resData.data.total = staticData.length;
     resData.data.list = staticData;
+    console.log(staticData.length);
   } else {
     const total = staticData.length;
     const from = sizeNum * (pageNum - 1);

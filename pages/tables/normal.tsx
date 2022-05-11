@@ -35,7 +35,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const NormalTable: NextPage = () => {
   const [list, updateList] = useState<DataItem[]>([]);
   useEffect(() => {
-    //
+    // fetch()
   }, [])
   return (
     <Container>
