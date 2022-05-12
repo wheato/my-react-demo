@@ -9,3 +9,16 @@ declare module '*.worker.ts' {
   // export = WebpackWorker;
   export default WebpackWorker;
 }
+
+export interface TraitItem {
+  traitType: string,
+  value: string,
+}
+
+export interface DataItem {
+  token: string;
+  token_id: number;
+  image: string;
+  rarity: number;
+  traits: TraitItem[];
+}

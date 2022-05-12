@@ -2,11 +2,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import staticData from '../../../data/apes.json';
 
+interface TraitItem {
+  traitType: string,
+  value: string
+}
 interface DataItem {
   token: string;
   token_id: number;
   image: string;
   rarity: number;
+  traits: TraitItem[];
 }
 interface CustomResponse {
   message: string;
@@ -38,15 +43,14 @@ export default function handler(
   const sizeNum = +size ?? 0;
 
   // 没有 page 参数时，返回全部
+  const total = (staticData as DataItem[]).length;
   if (!page) {
-    resData.data.total = staticData.length;
-    resData.data.list = staticData;
-    console.log(staticData.length);
+    resData.data.total = total;
+    resData.data.list = staticData as DataItem[];
   } else {
-    const total = staticData.length;
     const from = sizeNum * (pageNum - 1);
     const end = (sizeNum * pageNum) >= total ? total : (sizeNum * pageNum);
-    const listData = from >= end ? [] : staticData.slice(from, end);
+    const listData = from >= end ? [] : (staticData as DataItem[]).slice(from, end);
     resData.data = {
       page: pageNum,
       count: listData.length,

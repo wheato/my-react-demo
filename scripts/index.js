@@ -14,6 +14,7 @@ const usedData = list.map(item => {
     token_id: parseInt(item.tokenId),
     image: item.image,
     rarity: item.rarity.ranking,
+    traits: item.traits
   }
 })
 
