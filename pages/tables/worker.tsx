@@ -36,7 +36,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const API_URL = "/api/apes/list";
+const API_URL = "/api/apes/list?size=10000&page=1";
 
 const ApeTableHeader = () => {
   return (
@@ -154,10 +154,13 @@ const WorkerTable: NextPage = () => {
   const [isFetching, setFetching] = useState(false);
   
   const tsWorkerRef = useRef<Worker | null>();
+  const [costTime, setCostTime] = useState(0);
 
+  const startTime = useRef(0);
   const onSortByRarity = () => {
     if (tsWorkerRef?.current) {
       setSorting(true);
+      startTime.current = performance.now();
       tsWorkerRef.current.postMessage({ type: ActionTypes.SORT_BY_RARITY, payload: null });
       setSorting(false);
     }
@@ -165,6 +168,7 @@ const WorkerTable: NextPage = () => {
   const onSortById = () => {
     if (tsWorkerRef?.current) {
       setSorting(true);
+      startTime.current = performance.now();
       tsWorkerRef.current.postMessage({ type: ActionTypes.SORT_BY_ID, payload: null });
       setSorting(false);
     };
@@ -173,16 +177,14 @@ const WorkerTable: NextPage = () => {
     tsWorkerRef.current = new Worker(
       new URL('../../workers/ts.worker.ts', import.meta.url)
     );
-  
+
     tsWorkerRef.current.addEventListener('message', (evt) => {
-      const list = evt.data.payload;
-      const repeatedList: DataItem[] = [];
-      for (let i = 0; i < 1000; i++) {
-        repeatedList.push(...list);
-      }
-      source.current = [...repeatedList];
-      updateList(() => repeatedList);
+      const list: DataItem[] = evt.data.payload;
+      source.current = [...list];
+      updateList(() => list);
       setFetching(false);
+      const end = performance.now();
+      setCostTime(Math.round(end - startTime.current));
     });
 
     setFetching(true);
@@ -198,11 +200,17 @@ const WorkerTable: NextPage = () => {
           Worker Table
         </Typography>
         <Grid container spacing={2} style={{ marginBottom: 16 }}>
-          <Grid item xs={4}>
+          <Grid item xs={2}>
             <Button variant="contained" onClick={onSortByRarity}>按 Rarity 排序</Button>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={2}>
             <Button variant="contained" onClick={onSortById}>按 ID 排序</Button>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography component="p"></Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography component="p">Cost: {costTime} ms</Typography>
           </Grid>
           <Grid item xs={4}>
             <Typography component="p">Total: {list.length}</Typography>

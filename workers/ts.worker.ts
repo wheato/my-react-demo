@@ -10,10 +10,14 @@ const source: DataItem[] = [];
 async function fetchData(payload: string) {
   const resp = await fetch(payload).then(res => res.json());
   const { list } = resp.data;
-  source.push(...list);
+  const repeatedList = [];
+  for (let i = 0; i < 1; i++) {
+    repeatedList.push(...list);
+  }
+  source.push(...repeatedList);
   ctx.postMessage({
     type: 'tsData',
-    payload: list,
+    payload: source,
   });
 }
 

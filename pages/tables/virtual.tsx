@@ -161,24 +161,31 @@ const VirtualTable: NextPage = () => {
   const source = useRef<DataItem[]>([]);
   const [isSorting, setSorting] = useState(false);
   const { data, error } = useSWR(API_URL, fetcher);
+  const [costTime, setCostTime] = useState(0);
 
   const onSortByRarity = () => {
     setSorting(true);
+    const start = performance.now();
     const sorted = source.current.sort((a, b) => a.rarity - b.rarity);
     updateList([...sorted]);
+    const end = performance.now();
     setSorting(false);
+    setCostTime(Math.round(end - start));
   }
   const onSortById = () => {
     setSorting(true);
+    const start = performance.now();
     const sorted = source.current.sort((a, b) => a.token_id - b.token_id);
     updateList([...sorted]);
+    const end = performance.now();
     setSorting(false);
+    setCostTime(Math.round(end - start));
   }
   useEffect(() => {
     if (data) {
       const { list } = data.data;
       const repeatedList: DataItem[] = [];
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 1; i++) {
         repeatedList.push(...list);
       }
       source.current = [...repeatedList];
@@ -193,11 +200,17 @@ const VirtualTable: NextPage = () => {
         Virtualized Table
       </Typography>
       <Grid container spacing={2} style={{ marginBottom: 16 }}>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <Button variant="contained" onClick={onSortByRarity}>按 Rarity 排序</Button>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <Button variant="contained" onClick={onSortById}>按 ID 排序</Button>
+        </Grid>
+        <Grid item xs={2}>
+          <Typography component="p"></Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <Typography component="p">Cost: {costTime} ms</Typography>
         </Grid>
         <Grid item xs={4}>
           <Typography component="p">Total: {list.length}</Typography>
